@@ -1,7 +1,10 @@
+import AuthPage from "./pages/AuthPage"
+
+
 const App = () => {
   return (
     <>
-      <div>React App</div>
+    <AuthPage/>
     </>
   );
 };
