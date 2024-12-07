@@ -1,59 +1,166 @@
 import React, { useState } from "react";
-
-type SignState = "sign in" | "sign up";
+import { validateUserAuthForm } from "../utils/validateForms";
+import { Errors, UserAuthFormData, SignState } from "../types/auth.types";
+import axiosinstance from "../config/axios";
 
 const AuthForm: React.FC = () => {
   const [signState, setSignState] = useState<SignState>("sign in");
+  const [formData, setFormData] = useState<UserAuthFormData>({
+    fname: "",
+    lname: "",
+    email: "",
+    phone: "",
+    password: "",
+  });
+
+  const [errors, setErrors] = useState<Errors>({});
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    const { name, value } = event.target;
+
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+
+    const errorMessage = validateUserAuthForm(
+      { ...formData, [name]: value },
+      signState
+    )[name];
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: errorMessage || "",
+    }));
+  };
+
+  const handleUserAuth = async (
+    event: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
+    event.preventDefault();
+
+    const validationErrors = validateUserAuthForm(formData, signState);
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    try {
+      if (signState === "sign in") {
+        const response = await axiosinstance.post("/users/signup", {
+          email: formData.email,
+          password: formData.password,
+        });
+
+        console.log("response from signin", response);
+        setFormData({
+          fname: "",
+          lname: "",
+          email: "",
+          phone: "",
+          password: "",
+        });
+        setErrors({});
+      } else {
+        const response = await axiosinstance.post("/users/signup", {
+          fname: formData.fname,
+          lname: formData.lname,
+          email: formData.email,
+          phone: formData.phone,
+          password: formData.password,
+        });
+        console.log("response from signup", response);
+        setFormData({
+          email:"",
+          password:""
+        })
+        setErrors({})
+      }
+    } catch (error) {
+      console.log("API Error", error);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="max-w-md w-full p-6 bg-white border border-gray-300 rounded-md shadow-lg">
         <h2 className="text-2xl font-semibold text-center text-gray-700 mb-6">
-          {signState === "sign in" ? "Sign in" : "Create Account"}
+          {signState === "sign in" ? "Sign In" : "Create Account"}
         </h2>
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleUserAuth}>
           {signState === "sign up" && (
             <>
               <div>
                 <input
+                  value={formData.fname}
+                  onChange={handleChange}
+                  name="fname"
                   type="text"
                   placeholder="First Name"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:border-gray-400 focus:outline-none focus:ring-0"
                 />
+                {errors.fname && (
+                  <span className="text-red-500 text-sm">{errors.fname}</span>
+                )}
               </div>
               <div>
                 <input
+                  value={formData.lname}
+                  onChange={handleChange}
+                  name="lname"
                   type="text"
                   placeholder="Last Name"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:border-gray-400 focus:outline-none focus:ring-0"
                 />
+                {errors.lname && (
+                  <span className="text-red-500 text-sm">{errors.lname}</span>
+                )}
               </div>
             </>
           )}
 
           <div>
             <input
+              value={formData.email}
+              onChange={handleChange}
+              name="email"
               type="email"
               placeholder="Email"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:border-gray-400 focus:outline-none focus:ring-0"
             />
+            {errors.email && (
+              <span className="text-red-500 text-sm">{errors.email}</span>
+            )}
           </div>
           {signState === "sign up" && (
             <div>
               <input
+                value={formData.phone}
+                onChange={handleChange}
+                name="phone"
                 type="text"
                 placeholder="Phone"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:border-gray-400 focus:outline-none focus:ring-0"
               />
+              {errors.phone && (
+                <span className="text-red-500 text-sm">{errors.phone}</span>
+              )}
             </div>
           )}
 
           <div>
             <input
+              value={formData.password}
+              onChange={handleChange}
+              name="password"
               type="password"
               placeholder="Password"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:border-gray-400 focus:outline-none focus:ring-0"
             />
+            {errors.password && (
+              <span className="text-red-500 text-sm">{errors.password}</span>
+            )}
           </div>
           <button
             type="submit"
@@ -61,6 +168,7 @@ const AuthForm: React.FC = () => {
           >
             {signState === "sign in" ? "Sign In" : "Sign Up"}
           </button>
+
           {signState === "sign up" ? (
             <div className="text-gray-600 flex">
               Already have an account?
