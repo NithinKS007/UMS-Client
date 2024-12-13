@@ -2,6 +2,11 @@ import React, { useState } from "react";
 import { validateUserAuthForm } from "../utils/validateForms";
 import { Errors, UserAuthFormData, SignState } from "../types/auth.types";
 import axiosinstance from "../config/axios";
+import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { useNavigate  } from "react-router-dom";
+import { setUser } from "../redux/auth.slice";
+
 
 const AuthForm: React.FC = () => {
   const [signState, setSignState] = useState<SignState>("sign in");
@@ -14,6 +19,8 @@ const AuthForm: React.FC = () => {
   });
 
   const [errors, setErrors] = useState<Errors>({});
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = event.target;
@@ -47,23 +54,20 @@ const AuthForm: React.FC = () => {
     }
 
     try {
+      let response;
       if (signState === "sign in") {
-        const response = await axiosinstance.post("/users/signup", {
+        response = await axiosinstance.post("/users/signin", {
           email: formData.email,
           password: formData.password,
         });
+        dispatch(setUser(response.data.data.userData))
+        console.log("response from signin", response.data.data.userData);
+        toast.success(response.data.message);
 
-        console.log("response from signin", response);
-        setFormData({
-          fname: "",
-          lname: "",
-          email: "",
-          phone: "",
-          password: "",
-        });
-        setErrors({});
+        response.data.data.userData.role==="user" ? navigate("/home") : navigate("/dashboard")
+        
       } else {
-        const response = await axiosinstance.post("/users/signup", {
+        response = await axiosinstance.post("/users/signup", {
           fname: formData.fname,
           lname: formData.lname,
           email: formData.email,
@@ -71,14 +75,19 @@ const AuthForm: React.FC = () => {
           password: formData.password,
         });
         console.log("response from signup", response);
-        setFormData({
-          email:"",
-          password:""
-        })
-        setErrors({})
+        toast.success(response.data.message);
       }
-    } catch (error) {
+      setFormData({
+        fname: "",
+        lname: "",
+        email: "",
+        phone: "",
+        password: "",
+      });
+      setErrors({});
+    } catch (error: any) {
       console.log("API Error", error);
+      toast.error("Something went wrong, please try again.");
     }
   };
 
@@ -189,9 +198,11 @@ const AuthForm: React.FC = () => {
             </div>
           )}
         </form>
+        <p>pass:StrongPass1!</p>
       </div>
     </div>
   );
 };
 
 export default AuthForm;
+
