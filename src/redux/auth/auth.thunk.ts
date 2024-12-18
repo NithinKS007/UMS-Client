@@ -22,12 +22,12 @@ export const signoutUser = createAsyncThunk(
 export const updateCurrentuserProfile = createAsyncThunk(
   "auth/updateCurrentuserProfile",
   async ({ userData }: { userData: User}, { rejectWithValue }) => {
-
-    console.log("hello admin",userData)
     
     try {
       const response = await axiosinstance.put(`/users/update`,userData);
 
+      console.log("recieisdlkjf",response);
+      
       return response.data.data;
     } catch (error: any) {
       if (error.response && error.response.data.message) {

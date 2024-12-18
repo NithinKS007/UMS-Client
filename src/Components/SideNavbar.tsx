@@ -28,7 +28,7 @@ const SideNavbar: React.FC<SideNavbarProps> = ({ navItems }) => {
     dispatch(signout());
     persistor.purge();
     navigate("/");
-    showSuccessToast(`Loggedout successfully`)
+    showSuccessToast(`Logged out successfully`)
   };
   return (
     <nav className="fixed bg-white w-64 h-screen shadow-md flex flex-col justify-between">

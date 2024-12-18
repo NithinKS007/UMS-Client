@@ -121,7 +121,7 @@ const adminSlice = createSlice({
             ? action.payload
             : "Failed to update user details";
       })
-
+      //delete user details
       .addCase(deleteuser.pending, (state) => {
         state.isLoading = false;
         state.error = null;
@@ -139,6 +139,8 @@ const adminSlice = createSlice({
             ? action.payload
             : "Failed to delete user";
       })
+
+      //toggle block and unblock status
       .addCase(updateUserBlockStatus.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -157,31 +159,29 @@ const adminSlice = createSlice({
             ? action.payload
             : "Failed to update block status";
       })
-      .addCase(createUser.pending,(state)=>{
 
-        state.isLoading = true
-        state.error = null
-
+      //Creating user
+      .addCase(createUser.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
       })
-      .addCase(createUser.fulfilled,(state,action)=>{
+      .addCase(createUser.fulfilled, (state, action) => {
+        state.isLoading = false;
 
-         state.isLoading = false
-       
-  
-         
-         const userOtherThanAdmin = action.payload;
+        const userOtherThanAdmin = action.payload;
 
-         if (userOtherThanAdmin.role !== "admin") {
-             state.users = [...state.users, userOtherThanAdmin];
-         }
-         state.error = null; 
-         
+        if (userOtherThanAdmin.role !== "admin") {
+          state.users = [...state.users, userOtherThanAdmin];
+        }
+        state.error = null;
       })
-      .addCase(createUser.rejected,(state,action)=>{
-
-         state.isLoading = false
-         state.error = typeof action.payload === "string" ?action.payload :"Failed to add new user to the database"
-      })
+      .addCase(createUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error =
+          typeof action.payload === "string"
+            ? action.payload
+            : "Failed to add new user to the database";
+      });
   },
 });
 export const { setSearch, setSort, setFilter, setDirection } =

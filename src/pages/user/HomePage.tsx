@@ -10,15 +10,17 @@ const HomePage = () => {
   const userDetails = useSelector((state: RootState) => state.auth.user);
   const dispatch = useDispatch<AppDispatch>();
 
-  const handleUpdateuserDetails = async (userData: any) => {
-    console.log("user data received for updation", userData);
+  const handleUpdateuserDetails = async (userData: User) => {
+
+    console.log("user data received",userData);
+    
 
     try {
       await dispatch(updateCurrentuserProfile({ userData: userData }));
       showSuccessToast(`Your account details has been updated successfully`);
     } catch (error) {
-      console.log("Failed to update admin details, Please try again");
-      showErrorToast("Failed to update your details, Please try again");
+      console.log("Failed to update user details, Please try again");
+      showErrorToast("Failed to update user details, Please try again");
     }
   };
 

@@ -6,35 +6,21 @@ import { createUser } from "../../redux/admin/admin.thunk";
 import { showErrorToast, showSuccessToast } from "../../utils/toast";
 
 const AddUserPage: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
 
-  const dispatch = useDispatch<AppDispatch>()
-
-
-  const handleSave = async (newuserData:User) => {
-
+  const handleSave = async (newuserData: User) => {
     try {
-      
-      console.log("user data received for adding",newuserData);
-      
-     const response =  await dispatch(createUser(newuserData))
+      await dispatch(createUser(newuserData));
 
-     showSuccessToast(`user added successfully`)
-
-     console.log("response",response);
-     
-      console.log("user added to the database successfully");
-      
+      showSuccessToast(`user added successfully`);
     } catch (error) {
-     
       console.log("error adding user to the database");
-
-      showErrorToast(`Failed to create user`)
-      
+      showErrorToast(`Failed to create user`);
     }
-  }
+  };
   return (
     <>
-      <Profile profileData={null} onSave={handleSave}/>
+      <Profile profileData={null} onSave={handleSave}  />
     </>
   );
 };

@@ -76,7 +76,6 @@ const DashBoardPage: React.FC = () => {
     blockStatus: boolean
   ) => {
     try {
-      console.log("id and status for blocking", userId, blockStatus);
 
       const userData = await dispatch(
         updateUserBlockStatus({ userId, blockStatus })

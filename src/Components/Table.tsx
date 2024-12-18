@@ -36,7 +36,6 @@ const ReuseTable: React.FC<TableProps> = ({
   toggleuserBlockStatus,
 }) => {
   const handleCheckboxToggle = (id: string, currentBlockedStatus: boolean) => {
-    console.log("helo staus", id, currentBlockedStatus);
 
     toggleuserBlockStatus(id, !currentBlockedStatus);
   };

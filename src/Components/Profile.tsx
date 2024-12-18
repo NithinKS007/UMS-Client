@@ -12,7 +12,7 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 import { User } from "../redux/auth/auth.types";
-import { validateProfileForm } from "../utils/validateForms";
+import { imageValidation, validateProfileForm } from "../utils/validateForms";
 import { Errors, UserAuthFormData } from "../types/auth.types";
 
 interface ProfileProps {
@@ -27,11 +27,11 @@ const Profile: React.FC<ProfileProps> = ({ profileData, onSave }) => {
     email: "",
     phone: "",
     password: "",
-    dateOfBirth: "",
     address: "",
-    imageUrl: "",
     designation: "",
     companyName: "",
+    dateOfBirth: "",
+    imageUrl: "",
     role: "",
   });
 
@@ -46,14 +46,14 @@ const Profile: React.FC<ProfileProps> = ({ profileData, onSave }) => {
         lname: profileData.lname,
         email: profileData.email,
         phone: profileData.phone,
+        password: "",
+        address: profileData.address || "",
+        designation: profileData.designation || "",
+        companyName: profileData.companyName || "",
         dateOfBirth: profileData.dateOfBirth
           ? new Date(profileData.dateOfBirth).toISOString().split("T")[0]
           : "",
-        address: profileData.address || "",
         imageUrl: profileData.imageUrl || "",
-        designation: profileData.designation || "",
-        companyName: profileData.companyName || "",
-        password: "",
         role: profileData.role || "",
       });
     }
@@ -65,13 +65,39 @@ const Profile: React.FC<ProfileProps> = ({ profileData, onSave }) => {
       ...prev,
       [name]: value,
     }));
+    const validationErrors = validateProfileForm({
+      ...updatedUser,
+      [name]: value,
+    });
+
+    console.log("validationErros", validationErrors);
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name as keyof Errors]: validationErrors[name as keyof Errors],
+    }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) {
       const file = e.target.files?.[0];
-      const reader = new FileReader();
 
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        imageUrl: "",
+      }));
+
+      const error = imageValidation(file);
+      if (error) {
+        setErrors((preErrors) => ({
+          ...preErrors,
+          imageUrl: error,
+        }));
+
+        return;
+      }
+
+      const reader = new FileReader();
       reader.onload = (e) => {
         if (e.target?.result) {
           setNewProfilePic(e.target.result);
@@ -84,17 +110,38 @@ const Profile: React.FC<ProfileProps> = ({ profileData, onSave }) => {
       reader.readAsDataURL(file);
     }
   };
-  const [errors, setErrors] = useState<Errors>({});
+  const handleRoleChange = (e: SelectChangeEvent<string>) => {
+    const { value } = e.target;
+    setUpdatedUser((prev) => ({
+      ...prev,
+      role: value,
+    }));
+  };
+  const [errors, setErrors] = useState<Errors>({
+    fname: "",
+    lname: "",
+    email: "",
+    phone: "",
+    password: "",
+    address: "",
+    designation: "",
+    companyName: "",
+    dateOfBirth: "",
+    role: "",
+  });
 
   const handleSave = () => {
     const isEditMode = !!profileData;
     const validationErrors = validateProfileForm(updatedUser);
+
+    if (errors.imageUrl) {
+      return;
+    }
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
     onSave(updatedUser, isEditMode);
-
     resetForm();
   };
 
@@ -104,23 +151,30 @@ const Profile: React.FC<ProfileProps> = ({ profileData, onSave }) => {
       lname: "",
       email: "",
       phone: "",
-      dateOfBirth: "",
+      password: "",
       address: "",
-      imageUrl: "",
       designation: "",
       companyName: "",
-      password: "",
+      dateOfBirth: "",
+      imageUrl: "",
       role: "",
     });
     setNewProfilePic(null);
+    setErrors({
+      fname: "",
+      lname: "",
+      email: "",
+      phone: "",
+      password: "",
+      address: "",
+      designation: "",
+      companyName: "",
+      dateOfBirth: "",
+      role: "",
+      imageUrl: "",
+    });
   };
-  const handleRoleChange = (e: SelectChangeEvent<string>) => {
-    const { value } = e.target;
-    setUpdatedUser((prev) => ({
-      ...prev,
-      role: value,
-    }));
-  };
+
   return (
     <div className="w-full bg-white shadow-lg rounded-xl overflow-hidden">
       <div className="bg-gradient-to-r from-blue-800 to-blue-500 p-6 px-12 flex items-center">
@@ -138,7 +192,7 @@ const Profile: React.FC<ProfileProps> = ({ profileData, onSave }) => {
         </div>
         <div>
           <Typography variant="h6" color="white">
-            {updatedUser?.fname} {updatedUser?.lname}
+            {profileData && `${profileData?.fname} ${profileData?.lname}`}
           </Typography>
         </div>
       </div>
@@ -155,8 +209,8 @@ const Profile: React.FC<ProfileProps> = ({ profileData, onSave }) => {
             margin="normal"
             value={updatedUser?.fname}
             onChange={handleInputChange}
-            error={!!errors.fname} 
-            helperText={errors.fname} 
+            error={!!errors.fname}
+            helperText={errors.fname}
           />
 
           <TextField
@@ -267,7 +321,9 @@ const Profile: React.FC<ProfileProps> = ({ profileData, onSave }) => {
                 <MenuItem value="admin">Admin</MenuItem>
                 <MenuItem value="user">User</MenuItem>
               </Select>
-              {errors.role && <Typography color="error">{errors.role}</Typography>}
+              {errors.role && (
+                <Typography color="error">{errors.role}</Typography>
+              )}
             </FormControl>
           )}
         </Box>
@@ -294,7 +350,11 @@ const Profile: React.FC<ProfileProps> = ({ profileData, onSave }) => {
           </Button>
         </Box>
         {errors.imageUrl && (
-          <Typography variant="body2" color="error" style={{ marginTop: '8px' }}>
+          <Typography
+            variant="body2"
+            color="error"
+            style={{ marginTop: "8px" }}
+          >
             {errors.imageUrl}
           </Typography>
         )}

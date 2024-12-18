@@ -39,10 +39,12 @@ const authSlice = createSlice({
       })
       .addCase(signoutUser.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload as string;
+        state.error =  typeof action.payload === "string"
+        ? action.payload
+        : "Signout user";
       })
 
-      // Update the profile of the authenticated user (either admin or regular user)
+      // Update authenticated user details
 
       .addCase(updateCurrentuserProfile.pending, (state) => {
         state.isLoading = true;
