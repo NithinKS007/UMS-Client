@@ -5,7 +5,8 @@ import axiosinstance from "../config/axios";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { useNavigate  } from "react-router-dom";
-import { setUser } from "../redux/auth.slice";
+import { setUser } from "../redux/auth/auth.slice";
+import { useEffect } from "react";
 
 
 const AuthForm: React.FC = () => {
@@ -21,7 +22,9 @@ const AuthForm: React.FC = () => {
   const [errors, setErrors] = useState<Errors>({});
   const dispatch = useDispatch()
   const navigate = useNavigate()
-
+  useEffect(() => {
+    setErrors({});
+  }, [signState]);
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = event.target;
 
@@ -87,7 +90,7 @@ const AuthForm: React.FC = () => {
       setErrors({});
     } catch (error: any) {
       console.log("API Error", error);
-      toast.error("Something went wrong, please try again.");
+      toast.error(`${error.response.data.message}`)
     }
   };
 

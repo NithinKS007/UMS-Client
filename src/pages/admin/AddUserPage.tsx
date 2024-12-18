@@ -1,18 +1,41 @@
-import AddUser from "../../Components/AddUser";
-import TopNavbar from "../../Components/TopNavbar";
-import SideNavbar from "../../Components/SideNavbar";
+import { useDispatch } from "react-redux";
+import Profile from "../../Components/Profile";
+import { AppDispatch } from "../../redux/store";
+import { User } from "../../redux/auth/auth.types";
+import { createUser } from "../../redux/admin/admin.thunk";
+import { showErrorToast, showSuccessToast } from "../../utils/toast";
 
 const AddUserPage: React.FC = () => {
+
+  const dispatch = useDispatch<AppDispatch>()
+
+
+  const handleSave = async (newuserData:User) => {
+
+    try {
+      
+      console.log("user data received for adding",newuserData);
+      
+     const response =  await dispatch(createUser(newuserData))
+
+     showSuccessToast(`user added successfully`)
+
+     console.log("response",response);
+     
+      console.log("user added to the database successfully");
+      
+    } catch (error) {
+     
+      console.log("error adding user to the database");
+
+      showErrorToast(`Failed to create user`)
+      
+    }
+  }
   return (
-    <div className="flex flex-col min-h-screen">
-      <TopNavbar />
-      <div className="flex flex-1 ">
-        <SideNavbar />
-        <div className="flex-1 p-4 pt-24">
-          <AddUser />
-        </div>
-      </div>
-    </div>
+    <>
+      <Profile profileData={null} onSave={handleSave}/>
+    </>
   );
 };
 

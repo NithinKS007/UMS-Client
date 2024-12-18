@@ -3,8 +3,8 @@ import { useState } from "react";
 import { SelectChangeEvent } from "@mui/material";
 import { AppDispatch, RootState } from "../redux/store";
 import { useDispatch } from "react-redux";
-import { searchusers } from "../redux/admin.thunk";
-import { setFilter, setSort, setDirection } from "../redux/admin.slice";
+import { searchusers } from "../redux/admin/admin.thunk";
+import { setSort,setFilter,setDirection } from "../redux/admin/admin.slice";
 import { useSelector } from "react-redux";
 
 interface FilterComponentProps {
@@ -43,7 +43,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ sort, filter, directi
   };
 
   return (
-    <Box sx={{ display: "flex", justifyContent: "end", marginBottom: 1 }}>
+    <Box sx={{ display: "flex", justifyContent: "end", marginBottom: 1}}>
       <FormControl size="small" sx={{ minWidth: 150, marginRight: 1 }}>
         <InputLabel>Filter by</InputLabel>
         <Select label="Filter by" value={selectedFilter} onChange={handleFilterChange}>

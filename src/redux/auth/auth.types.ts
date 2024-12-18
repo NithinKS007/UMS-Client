@@ -6,32 +6,20 @@ export interface User {
   lname: string;
   email: string;
   phone: string;
+  password?:string;
   isBlocked: boolean;
   role: UserRole;
   dateOfBirth?: Date;
   address?: string;
+  imageUrl?:string;
+  designation?:string,
+  companyName?:string,
   createdAt?: Date;
   updatedAt?: Date;
 }
 
 export interface AuthState {
   user: User | null;
-  isLoading: boolean;
-  error: string | null;
-}
-
-export interface AdminState {
-  users: User[];
-  isLoading: boolean;
-  error: string | null;
-  search: string,
-  sort: string,
-  filter: string,
-  direction:string
-}
-
-export interface SearchState {
-  results: User[];
   isLoading: boolean;
   error: string | null;
 }

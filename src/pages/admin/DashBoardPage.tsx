@@ -1,22 +1,27 @@
-import React, { useEffect } from "react";
-import SideNavbar from "../../Components/SideNavbar";
-import TopNavbar from "../../Components/TopNavbar";
-import ReuseableTable from "../../Components/ReuseableTable";
+import React, { useEffect, useState } from "react";
+import ReuseTable from "../../Components/Table";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../redux/store";
-import { fetchusers } from "../../redux/admin.thunk";
+import {
+  deleteuser,
+  fetchusers,
+  updateUserBlockStatus,
+} from "../../redux/admin/admin.thunk";
 import { IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useNavigate } from "react-router-dom";
+import { showErrorToast, showSuccessToast } from "../../utils/toast";
+import ConfirmationModal from "../../Components/ConfirmationModal";
 
 interface UserData {
   _id: string;
-  firstName: string;
-  lastName: string;
+  fname: string;
+  lname: string;
   email: string;
   phone: string;
-  dob?: string | Date | null;
-  status: string;
+  dateOfBirth?: string | Date | null;
+  isBlocked: boolean;
   actions: React.ReactNode;
 }
 
@@ -35,6 +40,7 @@ interface DirectionOption {
 const DashBoardPage: React.FC = () => {
   const getuserData = useSelector((state: RootState) => state.admin.users);
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
 
   const fetchusersData = async () => {
     await dispatch(fetchusers());
@@ -45,22 +51,75 @@ const DashBoardPage: React.FC = () => {
   }, [dispatch]);
 
   const handleEdit = (userId: string) => {
-    console.log(`Edit user with ID: ${userId}`);
+    navigate(`/edituser/${userId}`);
   };
 
-  const handleDelete = (userId: string) => {
-    console.log(`Delete user with ID: ${userId}`);
+  const handleDelete = async () => {
+
+      if (!userIdToDelete) return
+    try {
+      const deletedUserData = await dispatch(deleteuser({ userId :userIdToDelete}));
+
+      showSuccessToast(
+        `${deletedUserData.payload.fname} ${deletedUserData.payload.lname} account has been deleted successfully`
+      );
+      setIsModalOpen(false)
+    } catch (error) {
+      console.log("Failed to delete user account, Please try again");
+      showErrorToast("Failed to delete user account, Please try again");
+      setIsModalOpen(false)
+    }
+  };
+
+  const toggleuserBlockStatus = async (
+    userId: string,
+    blockStatus: boolean
+  ) => {
+    try {
+      console.log("id and status for blocking", userId, blockStatus);
+
+      const userData = await dispatch(
+        updateUserBlockStatus({ userId, blockStatus })
+      );
+
+      showSuccessToast(
+        `${
+          userData?.payload.isBlocked
+            ? `${userData?.payload.fname} no longer has access`
+            : `${userData?.payload.fname} has access`
+        }`
+      );
+    } catch (error) {
+      showErrorToast(
+        "Failed to toggle block status user account, Please try again"
+      );
+    }
+  };
+
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [userIdToDelete, setUserIdToDelete] = useState<string | null>(null);
+
+  const handleModalOpen = (userId: string) => {
+    setUserIdToDelete(userId);
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setUserIdToDelete(null);
   };
 
   const usersData: UserData[] = getuserData
     ? getuserData.map((user) => ({
         _id: user._id,
-        firstName: user.fname,
-        lastName: user.lname,
+        fname: user.fname,
+        lname: user.lname,
         email: user.email,
         phone: user.phone,
-        dob: user.dateOfBirth ? user.dateOfBirth : "Not Available",
-        status: user.isBlocked ? "Blocked" : "Not Blocked",
+        dateOfBirth: user.dateOfBirth
+          ? new Date(user.dateOfBirth).toDateString()
+          : "Not Available",
+        isBlocked: user.isBlocked,
         actions: (
           <div>
             <IconButton
@@ -71,7 +130,7 @@ const DashBoardPage: React.FC = () => {
               <EditIcon sx={{ fontSize: "inherit" }} />
             </IconButton>
             <IconButton
-              onClick={() => handleDelete(user._id)}
+              onClick={() => handleModalOpen(user._id)}
               size="small"
               sx={{ fontSize: "16px" }}
             >
@@ -83,12 +142,12 @@ const DashBoardPage: React.FC = () => {
     : [];
 
   const columns = [
-    { label: "First Name", field: "firstName" },
-    { label: "Last Name", field: "lastName" },
+    { label: "First Name", field: "fname" },
+    { label: "Last Name", field: "lname" },
     { label: "Email", field: "email" },
     { label: "Phone", field: "phone" },
-    { label: "DOB", field: "dob" },
-    { label: "Status", field: "status" },
+    { label: "DOB", field: "dateOfBirth" },
+    { label: "Status", field: "isBlocked" },
     { label: "Actions", field: "actions" },
   ];
 
@@ -107,23 +166,23 @@ const DashBoardPage: React.FC = () => {
     { value: "Z to A" },
   ];
   return (
-    <div className="flex flex-col min-h-screen">
-      <TopNavbar />
-      <div className="flex flex-1">
-        <div className="w-64 bg-gray-800 text-white">
-          <SideNavbar />
-        </div>
-        <div className="flex-1 p-4 pt-24">
-          <ReuseableTable
-            columns={columns}
-            data={usersData}
-            sort={sort}
-            filter={filter}
-            direction={direction}
-          />
-        </div>
-      </div>
-    </div>
+    <>
+      <ReuseTable
+        columns={columns}
+        data={usersData}
+        sort={sort}
+        filter={filter}
+        direction={direction}
+        toggleuserBlockStatus={toggleuserBlockStatus}
+      />
+      <ConfirmationModal 
+      open = {isModalOpen}
+      onClose={handleModalClose}
+      onConfirm={handleDelete}
+      title="Confirm deletion"
+      message="Are you sure you want to delete this user? This action cannot be undone"
+      />
+    </>
   );
 };
 

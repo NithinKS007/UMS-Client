@@ -1,5 +1,7 @@
 import React from "react";
 import FilterComponent from "./FilterComponent";
+import BlockIcon from "@mui/icons-material/Block";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import {
   Table,
   TableBody,
@@ -16,19 +18,32 @@ interface TableColumn {
   field: string;
 }
 
-
 interface TableProps {
   columns: TableColumn[];
   data: any[];
-  sort:any[]
-  filter:any[]
-  direction:any[]
+  sort: any[];
+  filter: any[];
+  direction: any[];
+  toggleuserBlockStatus: (id: string, blockStatus: boolean) => void;
 }
 
-const ReuseableTable: React.FC<TableProps> = ({ columns, data,sort,filter ,direction}) => {
+const ReuseTable: React.FC<TableProps> = ({
+  columns,
+  data,
+  sort,
+  filter,
+  direction,
+  toggleuserBlockStatus,
+}) => {
+  const handleCheckboxToggle = (id: string, currentBlockedStatus: boolean) => {
+    console.log("helo staus", id, currentBlockedStatus);
+
+    toggleuserBlockStatus(id, !currentBlockedStatus);
+  };
+
   return (
     <>
-      <FilterComponent sort={sort} filter={filter} direction={direction}/>
+      <FilterComponent sort={sort} filter={filter} direction={direction} />
       <TableContainer
         component={Paper}
         sx={{ maxWidth: "100%", margin: "auto" }}
@@ -60,14 +75,27 @@ const ReuseableTable: React.FC<TableProps> = ({ columns, data,sort,filter ,direc
                     padding="checkbox"
                     sx={{ textAlign: "center", padding: "4px" }}
                   >
-                    <Checkbox />
+                    <Checkbox
+                      checked={row.isBlocked}
+                      onChange={() =>
+                        handleCheckboxToggle(row._id, row.isBlocked)
+                      }
+                    />
                   </TableCell>
                   {columns.map((column) => (
                     <TableCell
                       key={column.field}
                       sx={{ textAlign: "left", padding: "4px" }}
                     >
-                      {row[column.field]}
+                      {column.field === "isBlocked" ? (
+                        row.isBlocked ? (
+                          <BlockIcon sx={{ color: "red" }} />
+                        ) : (
+                          <CheckCircleIcon sx={{ color: "green" }} />
+                        )
+                      ) : (
+                        row[column.field] ?? "N/A"
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -80,4 +108,4 @@ const ReuseableTable: React.FC<TableProps> = ({ columns, data,sort,filter ,direc
   );
 };
 
-export default ReuseableTable;
+export default ReuseTable;

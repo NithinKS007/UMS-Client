@@ -1,6 +1,6 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AuthState, User } from "../types/redux.types";
-import { signoutUser } from "./auth.thunk";
+import { createSlice } from "@reduxjs/toolkit";
+import { AuthState } from "./auth.types";
+import { signoutUser, updateCurrentuserProfile } from "./auth.thunk";
 
 const initialState: AuthState = {
   user: null,
@@ -12,13 +12,13 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setUser: (state, action: PayloadAction<User>) => {
+    setUser: (state, action) => {
       state.user = action.payload;
     },
-    setLoading: (state, action: PayloadAction<boolean>) => {
+    setLoading: (state, action) => {
       state.isLoading = action.payload;
     },
-    setError: (state, action: PayloadAction<string>) => {
+    setError: (state, action) => {
       state.error = action.payload;
     },
     signout: (state) => {
@@ -40,6 +40,25 @@ const authSlice = createSlice({
       .addCase(signoutUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
+      })
+
+      // Update the profile of the authenticated user (either admin or regular user)
+
+      .addCase(updateCurrentuserProfile.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(updateCurrentuserProfile.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload;
+        state.error = null;
+      })
+      .addCase(updateCurrentuserProfile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error =
+          typeof action.payload === "string"
+            ? action.payload
+            : "Failed to update current user details";
       });
   },
 });
