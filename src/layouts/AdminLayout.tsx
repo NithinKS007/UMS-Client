@@ -10,7 +10,6 @@ const AdminLayout: React.FC = () => {
     { icon: <MdPersonAdd />, text: "ADD USER", path: "/adduser" },
     { icon: <MdAccountCircle />, text: "PROFILE", path: "/profile" },
   ];
-
   return (
     <div className="flex flex-col min-h-screen">
       <TopNavbar />

@@ -4,7 +4,6 @@ import axios, {
   AxiosResponse,
   AxiosError,
 } from "axios";
-import Cookies from "js-cookie";
 import store from "../redux/store";
 import { signout } from "../redux/auth/auth.slice";
 
@@ -28,24 +27,14 @@ axiosinstance.interceptors.response.use(
     const originalRequest = error.config as CustomAxiosRequestConfig;
 
     if (
-      error.response &&
-      error.response.status === 401 &&
+      error?.response &&
+      error?.response?.status === 401 &&
       !originalRequest?.retry
     ) {
       originalRequest.retry = true;
 
-      const refreshToken = Cookies.get("refreshToken");
-      if (!refreshToken) {
-        console.log("No refresh token available.");
-        store.dispatch(signout());  
-        return Promise.reject("No refresh token");
-      }
-
       try {
-        const response = await axiosinstance.post("/users/refresh", {});
-        if (response && response.data && response.data.accessToken) {
-          Cookies.set("accessToken", response.data.accessToken);
-        }
+        await axiosinstance.post("/users/refresh", {});
         return axiosinstance(originalRequest);
       } catch (refreshError) {
         console.log("Error refreshing token", refreshError);

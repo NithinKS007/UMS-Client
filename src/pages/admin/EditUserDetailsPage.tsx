@@ -9,6 +9,7 @@ import {
 import { useParams } from "react-router-dom";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 import { User } from "../../redux/auth/auth.types";
+import { validateProfileForm } from "../../utils/validateForms";
 
 
 const EditUserDetailsPage: React.FC = () => {
@@ -43,7 +44,7 @@ const EditUserDetailsPage: React.FC = () => {
 
 
 
-  return <Profile profileData ={userDetails as User} onSave={handleUpdateuserDetails} />;
+  return <Profile profileData ={userDetails as User} onSave={handleUpdateuserDetails} validateForm={validateProfileForm}/>;
 };
 
 export default EditUserDetailsPage;

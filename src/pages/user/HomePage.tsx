@@ -5,6 +5,7 @@ import { AppDispatch, RootState } from "../../redux/store";
 import { updateCurrentuserProfile } from "../../redux/auth/auth.thunk";
 import { showErrorToast, showSuccessToast } from "../../utils/toast";
 import { User } from "../../redux/auth/auth.types";
+import { validateProfileForm } from "../../utils/validateForms";
 
 const HomePage = () => {
   const userDetails = useSelector((state: RootState) => state.auth.user);
@@ -29,6 +30,7 @@ const HomePage = () => {
       <Profile
         profileData={userDetails as User}
         onSave={handleUpdateuserDetails}
+        validateForm={validateProfileForm}
       />
     </>
   );

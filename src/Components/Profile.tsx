@@ -12,15 +12,20 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 import { User } from "../redux/auth/auth.types";
-import { imageValidation, validateProfileForm } from "../utils/validateForms";
+import { imageValidation } from "../utils/validateForms";
 import { Errors, UserAuthFormData } from "../types/auth.types";
 
 interface ProfileProps {
   profileData: User | null;
   onSave: (updatedData: any, isEditMode: boolean) => void;
+  validateForm: (formData: UserAuthFormData) => Errors;
 }
 
-const Profile: React.FC<ProfileProps> = ({ profileData, onSave }) => {
+const Profile: React.FC<ProfileProps> = ({
+  profileData,
+  onSave,
+  validateForm,
+}) => {
   const [updatedUser, setUpdatedUser] = useState<UserAuthFormData>({
     fname: "",
     lname: "",
@@ -38,6 +43,18 @@ const Profile: React.FC<ProfileProps> = ({ profileData, onSave }) => {
   const [newProfilePic, setNewProfilePic] = useState<
     null | string | ArrayBuffer
   >(null);
+  const [errors, setErrors] = useState<Errors>({
+    fname: "",
+    lname: "",
+    email: "",
+    phone: "",
+    password: "",
+    address: "",
+    designation: "",
+    companyName: "",
+    dateOfBirth: "",
+    role: "",
+  });
 
   useEffect(() => {
     if (profileData) {
@@ -65,12 +82,10 @@ const Profile: React.FC<ProfileProps> = ({ profileData, onSave }) => {
       ...prev,
       [name]: value,
     }));
-    const validationErrors = validateProfileForm({
+    const validationErrors = validateForm({
       ...updatedUser,
       [name]: value,
     });
-
-    console.log("validationErros", validationErrors);
 
     setErrors((prevErrors) => ({
       ...prevErrors,
@@ -117,22 +132,10 @@ const Profile: React.FC<ProfileProps> = ({ profileData, onSave }) => {
       role: value,
     }));
   };
-  const [errors, setErrors] = useState<Errors>({
-    fname: "",
-    lname: "",
-    email: "",
-    phone: "",
-    password: "",
-    address: "",
-    designation: "",
-    companyName: "",
-    dateOfBirth: "",
-    role: "",
-  });
 
   const handleSave = () => {
     const isEditMode = !!profileData;
-    const validationErrors = validateProfileForm(updatedUser);
+    const validationErrors = validateForm(updatedUser);
 
     if (errors.imageUrl) {
       return;
@@ -317,13 +320,15 @@ const Profile: React.FC<ProfileProps> = ({ profileData, onSave }) => {
                 value={updatedUser?.role}
                 onChange={handleRoleChange}
                 error={!!errors.role}
+               
               >
                 <MenuItem value="admin">Admin</MenuItem>
                 <MenuItem value="user">User</MenuItem>
               </Select>
               {errors.role && (
-                <Typography color="error">{errors.role}</Typography>
-              )}
+                 <Typography color="error" variant="body2" sx={{ marginTop: 1 }}>
+                 {errors.role}
+               </Typography> )}
             </FormControl>
           )}
         </Box>

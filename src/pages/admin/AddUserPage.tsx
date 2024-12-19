@@ -4,6 +4,7 @@ import { AppDispatch } from "../../redux/store";
 import { User } from "../../redux/auth/auth.types";
 import { createUser } from "../../redux/admin/admin.thunk";
 import { showErrorToast, showSuccessToast } from "../../utils/toast";
+import { validateAdduserForm } from "../../utils/validateForms";
 
 const AddUserPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -20,7 +21,11 @@ const AddUserPage: React.FC = () => {
   };
   return (
     <>
-      <Profile profileData={null} onSave={handleSave}  />
+      <Profile
+        profileData={null}
+        onSave={handleSave}
+        validateForm={validateAdduserForm}
+      />
     </>
   );
 };

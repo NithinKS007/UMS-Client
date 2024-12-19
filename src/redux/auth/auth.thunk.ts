@@ -25,8 +25,6 @@ export const updateCurrentuserProfile = createAsyncThunk(
     
     try {
       const response = await axiosinstance.put(`/users/update`,userData);
-
-      console.log("recieisdlkjf",response);
       
       return response.data.data;
     } catch (error: any) {

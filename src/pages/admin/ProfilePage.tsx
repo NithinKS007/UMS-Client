@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { User } from "../../redux/auth/auth.types";
 import { showErrorToast, showSuccessToast } from "../../utils/toast";
 import { updateCurrentuserProfile } from "../../redux/auth/auth.thunk";
+import { validateProfileForm } from "../../utils/validateForms";
 
 const ProfilePage = () => {
   const adminDetails = useSelector((state: RootState) => state.auth.user);
@@ -12,14 +13,10 @@ const ProfilePage = () => {
 
   const handleUpdateAdminDetails = async (adminData: User) => {
 
-    console.log("admin data received",adminData);
-    
-
     try {
-       const h =  await dispatch(updateCurrentuserProfile({userData:adminData}))
+       const response =  await dispatch(updateCurrentuserProfile({userData:adminData}))
 
-       console.log("response rece",h);
-       
+       console.log("response rece",response);
        showSuccessToast(`Your account details has been updated successfully`);
     } catch (error) {
       console.log("Failed to update admin details, Please try again");
@@ -32,6 +29,7 @@ const ProfilePage = () => {
       <Profile
         profileData={adminDetails as User}
         onSave={handleUpdateAdminDetails}
+        validateForm={validateProfileForm}
       />
     </>
   );
