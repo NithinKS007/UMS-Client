@@ -39,9 +39,8 @@ const authSlice = createSlice({
       })
       .addCase(signoutUser.rejected, (state, action) => {
         state.isLoading = false;
-        state.error =  typeof action.payload === "string"
-        ? action.payload
-        : "Signout user";
+        state.error =
+          typeof action.payload === "string" ? action.payload : "Signout user";
       })
 
       // Update authenticated user details

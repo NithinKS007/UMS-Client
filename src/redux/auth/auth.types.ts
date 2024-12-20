@@ -6,14 +6,14 @@ export interface User {
   lname: string;
   email: string;
   phone: string;
-  password?:string;
+  password?: string;
   isBlocked: boolean;
   role: UserRole;
   dateOfBirth?: Date;
   address?: string;
-  imageUrl?:string;
-  designation?:string,
-  companyName?:string,
+  imageUrl?: string;
+  designation?: string;
+  companyName?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }

@@ -213,7 +213,7 @@ const AuthForm: React.FC = () => {
         </div>
       )}
     </form>
-    <p>pass:StrongPass1!</p>
+    {/* <p>pass:StrongPass1!</p> */}
   </div>
 </div>
 

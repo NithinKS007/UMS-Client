@@ -9,13 +9,10 @@ import { validateProfileForm } from "../../utils/validateForms";
 
 const HomePage = () => {
   const userDetails = useSelector((state: RootState) => state.auth.user);
+  const isLoading = useSelector((state: RootState) => state.auth.isLoading);
   const dispatch = useDispatch<AppDispatch>();
 
   const handleUpdateuserDetails = async (userData: User) => {
-
-    console.log("user data received",userData);
-    
-
     try {
       await dispatch(updateCurrentuserProfile({ userData: userData }));
       showSuccessToast(`Your account details has been updated successfully`);
@@ -31,6 +28,7 @@ const HomePage = () => {
         profileData={userDetails as User}
         onSave={handleUpdateuserDetails}
         validateForm={validateProfileForm}
+        isLoading={isLoading}
       />
     </>
   );

@@ -19,12 +19,14 @@ interface ProfileProps {
   profileData: User | null;
   onSave: (updatedData: any, isEditMode: boolean) => void;
   validateForm: (formData: UserAuthFormData) => Errors;
+  isLoading: boolean;
 }
 
 const Profile: React.FC<ProfileProps> = ({
   profileData,
   onSave,
   validateForm,
+  isLoading,
 }) => {
   const [updatedUser, setUpdatedUser] = useState<UserAuthFormData>({
     fname: "",
@@ -320,15 +322,15 @@ const Profile: React.FC<ProfileProps> = ({
                 value={updatedUser?.role}
                 onChange={handleRoleChange}
                 error={!!errors.role}
-               
               >
                 <MenuItem value="admin">Admin</MenuItem>
                 <MenuItem value="user">User</MenuItem>
               </Select>
               {errors.role && (
-                 <Typography color="error" variant="body2" sx={{ marginTop: 1 }}>
-                 {errors.role}
-               </Typography> )}
+                <Typography color="error" variant="body2" sx={{ marginTop: 1 }}>
+                  {errors.role}
+                </Typography>
+              )}
             </FormControl>
           )}
         </Box>
@@ -365,8 +367,13 @@ const Profile: React.FC<ProfileProps> = ({
         )}
       </Box>
       <Box display="flex" justifyContent="flex-end" p={2}>
-        <Button variant="contained" color="success" onClick={handleSave}>
-          {profileData ? "Save Changes" : "Add User"}
+        <Button
+          variant="contained"
+          color="success"
+          onClick={handleSave}
+          sx={{ minWidth: 150 }}
+        >
+          {isLoading ? "Loading..." : profileData ? "Save Changes" : "Add User"}
         </Button>
       </Box>
     </div>

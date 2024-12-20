@@ -13,6 +13,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
 import { showErrorToast, showSuccessToast } from "../../utils/toast";
 import ConfirmationModal from "../../Components/ConfirmationModal";
+import PaginationRounded from "../../Components/Pagination";
 
 interface UserData {
   _id: string;
@@ -55,28 +56,34 @@ const DashBoardPage: React.FC = () => {
   };
 
   const handleDelete = async () => {
-
-      if (!userIdToDelete) return
+    if (!userIdToDelete) return;
     try {
-      const deletedUserData = await dispatch(deleteuser({ userId :userIdToDelete}));
+      const deletedUserData = await dispatch(
+        deleteuser({ userId: userIdToDelete })
+      );
 
       showSuccessToast(
         `${deletedUserData.payload.fname} ${deletedUserData.payload.lname} account has been deleted successfully`
       );
-      setIsModalOpen(false)
+      setIsModalOpen(false);
     } catch (error) {
       console.log("Failed to delete user account, Please try again");
       showErrorToast("Failed to delete user account, Please try again");
-      setIsModalOpen(false)
+      setIsModalOpen(false);
     }
   };
+
+  const handlePageChange = () =>{
+
+
+    
+  }
 
   const toggleuserBlockStatus = async (
     userId: string,
     blockStatus: boolean
   ) => {
     try {
-
       const userData = await dispatch(
         updateUserBlockStatus({ userId, blockStatus })
       );
@@ -174,12 +181,16 @@ const DashBoardPage: React.FC = () => {
         direction={direction}
         toggleuserBlockStatus={toggleuserBlockStatus}
       />
-      <ConfirmationModal 
-      open = {isModalOpen}
-      onClose={handleModalClose}
-      onConfirm={handleDelete}
-      title="Confirm deletion"
-      message="Are you sure you want to delete this user? This action cannot be undone"
+      <div style={{ display: "flex", justifyContent: "flex-end",marginTop:"10px" }}>
+        <PaginationRounded page={10} onChange={handlePageChange} count={10} />
+      </div>
+
+      <ConfirmationModal
+        open={isModalOpen}
+        onClose={handleModalClose}
+        onConfirm={handleDelete}
+        title="Confirm deletion"
+        message="Are you sure you want to delete this user? This action cannot be undone"
       />
     </>
   );

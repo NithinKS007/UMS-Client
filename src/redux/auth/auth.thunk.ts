@@ -21,11 +21,10 @@ export const signoutUser = createAsyncThunk(
 
 export const updateCurrentuserProfile = createAsyncThunk(
   "auth/updateCurrentuserProfile",
-  async ({ userData }: { userData: User}, { rejectWithValue }) => {
-    
+  async ({ userData }: { userData: User }, { rejectWithValue }) => {
     try {
-      const response = await axiosinstance.put(`/users/update`,userData);
-      
+      const response = await axiosinstance.put(`/users/update`, userData);
+
       return response.data.data;
     } catch (error: any) {
       if (error.response && error.response.data.message) {

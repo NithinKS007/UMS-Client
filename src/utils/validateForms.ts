@@ -68,7 +68,6 @@ const validateRole = (role: string): string => {
 export const validateUserAuthForm = (
   formData: UserAuthFormData,
   formState: SignState
-
 ): Errors => {
   const errors: Errors = {};
 
@@ -89,8 +88,7 @@ export const validateUserAuthForm = (
   if (passwordError) errors.password = passwordError;
 
   return errors;
-}
-
+};
 
 export const validateProfileForm = (formData: UserAuthFormData): Errors => {
   const errors: Errors = {};
@@ -107,26 +105,29 @@ export const validateProfileForm = (formData: UserAuthFormData): Errors => {
   const phoneError = validatePhone(formData.phone as string);
   if (phoneError) errors.phone = phoneError;
 
-  if(formData.address) {
+  if (formData.address) {
     const addressError = validateAddress(formData.address as string);
     if (addressError) errors.address = addressError;
   }
- 
+
   if (formData.designation) {
-    const designationError = validateDesignation(formData.designation as string);
+    const designationError = validateDesignation(
+      formData.designation as string
+    );
     if (designationError) errors.designation = designationError;
   }
 
-  if(formData.companyName) {
-    const companyNameError = validateCompanyName(formData.companyName as string);
+  if (formData.companyName) {
+    const companyNameError = validateCompanyName(
+      formData.companyName as string
+    );
     if (companyNameError) errors.companyName = companyNameError;
   }
 
   return errors;
 };
 
-export const validateAdduserForm = (formData:UserAuthFormData):Errors=>{
-
+export const validateAdduserForm = (formData: UserAuthFormData): Errors => {
   const errors: Errors = {};
 
   const fnameError = validatefName(formData.fname as string);
@@ -144,38 +145,42 @@ export const validateAdduserForm = (formData:UserAuthFormData):Errors=>{
   const passwordError = validatePassword(formData.password as string);
   if (passwordError) errors.password = passwordError;
 
-  if(formData.address) {
+  if (formData.address) {
     const addressError = validateAddress(formData.address as string);
     if (addressError) errors.address = addressError;
   }
- 
+
   if (formData.designation) {
-    const designationError = validateDesignation(formData.designation as string);
+    const designationError = validateDesignation(
+      formData.designation as string
+    );
     if (designationError) errors.designation = designationError;
   }
 
-  if(formData.companyName) {
-    const companyNameError = validateCompanyName(formData.companyName as string);
+  if (formData.companyName) {
+    const companyNameError = validateCompanyName(
+      formData.companyName as string
+    );
     if (companyNameError) errors.companyName = companyNameError;
   }
 
   const roleError = validateRole(formData.role as string);
-    if (roleError) errors.role = roleError;
+  if (roleError) errors.role = roleError;
 
   return errors;
-
-}
+};
 
 export const imageValidation = (file: File) => {
   const fileType = file.type;
   const fileSize = file.size;
 
-  if (!["image/jpeg", "image/png", "image/jpg", "image/webp"].includes(fileType)) {
+  if (
+    !["image/jpeg", "image/png", "image/jpg", "image/webp"].includes(fileType)
+  ) {
     return "Only image files (JPEG, PNG, JPG, WEBP) are allowed.";
   }
   if (fileSize > 5 * 1024 * 1024) {
     return "File size should be less than 5MB.";
   }
-  return ""; 
+  return "";
 };
-

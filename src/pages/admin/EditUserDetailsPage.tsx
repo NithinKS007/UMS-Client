@@ -6,15 +6,17 @@ import {
   getuserDetails,
   updateuserDetails,
 } from "../../redux/admin/admin.thunk";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 import { User } from "../../redux/auth/auth.types";
 import { validateProfileForm } from "../../utils/validateForms";
 
-
 const EditUserDetailsPage: React.FC = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  const { userDetails } = useSelector((state: RootState) => state.admin);
+  const { userDetails, isLoading } = useSelector(
+    (state: RootState) => state.admin
+  );
   const { id } = useParams<{ id: string }>();
 
   useEffect(() => {
@@ -23,14 +25,15 @@ const EditUserDetailsPage: React.FC = () => {
     }
   }, [dispatch, id]);
 
-  const handleUpdateuserDetails = async (userData: any) => {
+  const handleUpdateuserDetails = async (userData: User) => {
     if (id) {
       try {
-        
         const updatedUserData = await dispatch(
           updateuserDetails({ id, userData })
         );
-
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 2000);
         showSuccessToast(
           `The details of ${updatedUserData.payload.fname} ${updatedUserData.payload.lname} have been successfully updated.`
         );
@@ -42,9 +45,14 @@ const EditUserDetailsPage: React.FC = () => {
     }
   };
 
-
-
-  return <Profile profileData ={userDetails as User} onSave={handleUpdateuserDetails} validateForm={validateProfileForm}/>;
+  return (
+    <Profile
+      profileData={userDetails as User}
+      onSave={handleUpdateuserDetails}
+      validateForm={validateProfileForm}
+      isLoading={isLoading}
+    />
+  );
 };
 
 export default EditUserDetailsPage;

@@ -138,7 +138,6 @@ export const createUser = createAsyncThunk(
       const response = await axiosinstance.post(`/admins/adduser/`, {
         newuserData,
       });
-      console.log("action pay", response.data.data);
       return response.data.data;
     } catch (error: any) {
       if (error.response && error.response.data.message) {
